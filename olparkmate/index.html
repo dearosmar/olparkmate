@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OlparkMate — Olympic Park concert companion (demo)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#1F3A68;--orange:#F28C1B;--ink:#1B2433;--sub:#6B7689;--bg:#F4F6FA;--line:#E6EAF0;
+    --ok-bg:#E3F6EA;--ok:#1E8E4E;--busy-bg:#FFF1E0;--busy:#C96A00;--full-bg:#FDE6E6;--full:#C62F2F;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:"Noto Sans KR","Noto Sans SC","Noto Sans JP",system-ui,sans-serif;color:var(--ink);background:#DDE3EC;
+    display:flex;align-items:center;justify-content:center;-webkit-font-smoothing:antialiased}
+  body.lang-zh{font-family:"Noto Sans SC","Noto Sans KR",system-ui,sans-serif}
+  body.lang-ja{font-family:"Noto Sans JP","Noto Sans KR",system-ui,sans-serif}
+  .phone{width:390px;height:844px;background:var(--bg);border-radius:36px;overflow:hidden;display:flex;flex-direction:column;
+    box-shadow:0 30px 80px rgba(31,58,104,.25);position:relative}
+  @media (max-width:500px){body{background:var(--bg);align-items:stretch}.phone{width:100%;height:100dvh;border-radius:0;box-shadow:none}}
+  main{flex:1;overflow-y:auto;padding:38px 22px 20px;display:flex;flex-direction:column;gap:14px}
+  h1{font-size:26px;font-weight:900;color:var(--navy);letter-spacing:-.3px}
+  h2{font-size:17px;font-weight:700}
+  .sub{font-size:13px;color:var(--sub)}
+  .cap{font-size:11px;color:#8A94A6;line-height:1.45}
+  .row{display:flex;align-items:center;gap:8px}
+  .between{justify-content:space-between}
+  .card{background:#fff;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{border:1px solid #D6DCE6;background:#fff;color:var(--sub);border-radius:999px;padding:6px 12px;font:inherit;font-size:13px;font-weight:500;cursor:pointer}
+  .chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+  .pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700;white-space:nowrap}
+  .pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+  .pill.ok{background:var(--ok-bg);color:var(--ok)}.pill.busy{background:var(--busy-bg);color:var(--busy)}.pill.full{background:var(--full-bg);color:var(--full)}
+  .alert{background:#FFF4E6}
+  .alert .k{font-size:11px;font-weight:700;color:var(--busy)}
+  .alert p{font-size:14px;font-weight:500;line-height:1.5}
+  .ev{display:flex;flex-direction:row;gap:14px;align-items:center;padding:12px;cursor:pointer;box-shadow:0 4px 14px rgba(31,51,89,.08);border:0;text-align:left;font:inherit;width:100%}
+  .ev:active{transform:scale(.99)}
+  .date{width:56px;height:64px;border-radius:12px;background:var(--navy);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:none}
+  .date small{font-size:11px;color:#AFC3E6;font-weight:500}.date b{font-size:22px;line-height:1.1}
+  .ev .t{font-size:15px;font-weight:700}.ev .v{font-size:12px;font-weight:500;color:var(--orange)}.ev .m{font-size:12px;color:var(--sub)}
+  .ev .info{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
+  .chart{display:flex;justify-content:space-between;align-items:flex-end;height:140px}
+  .bar{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;color:var(--sub)}
+  .bar i{display:block;width:22px;border-radius:6px}
+  .best{background:var(--navy);color:#fff;gap:4px}
+  .best small{font-size:11px;font-weight:700;color:#AFC3E6}.best b{font-size:30px;font-weight:900}.best p{font-size:13px;color:#DCE5F5;line-height:1.5}
+  .btn{border:0;border-radius:14px;padding:14px;font:inherit;font-size:15px;font-weight:700;cursor:pointer;background:var(--orange);color:#fff;width:100%}
+  .btn.line{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
+  .btn.done{background:var(--ok)}.btn.line.done{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+  .li{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .li .n{font-size:14px;font-weight:500}.li .d{font-size:12px;color:var(--sub)}
+  .live{background:var(--full-bg);color:var(--full)}
+  .live::before{animation:blink 1.2s infinite}
+  @keyframes blink{50%{opacity:.2}}
+  .search{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #D6DCE6;border-radius:14px;padding:12px 14px}
+  .search input{border:0;outline:0;font:inherit;font-size:15px;flex:1;min-width:0;background:transparent}
+  .item{cursor:pointer;border-radius:10px;padding:6px;margin:-6px}
+  .item.sel{background:#F0F4FA}
+  .tag{background:#E8EEF7;color:var(--navy);font-size:11px;font-weight:700;border-radius:6px;padding:3px 8px;white-space:nowrap}
+  .ko{border:2px solid var(--navy)}
+  .ko .k{font-size:11px;font-weight:700;color:var(--orange)}
+  .ko .big{font-family:"Noto Sans KR",sans-serif;font-size:19px;font-weight:700;line-height:1.5}
+  .ko .ref{font-family:"Noto Sans KR",sans-serif;font-size:14px;font-weight:500;color:var(--navy)}
+  .ko .tr{font-size:12px;color:var(--sub);line-height:1.45}
+  nav{display:flex;justify-content:space-around;background:#fff;border-top:1px solid var(--line);padding:10px 8px calc(14px + env(safe-area-inset-bottom))}
+  nav button{border:0;background:none;font:inherit;font-size:11px;font-weight:500;color:#A3ADBD;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;width:80px}
+  nav button.on{color:var(--navy);font-weight:700}
+  nav svg,.ic{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+  .ic.s{width:18px;height:18px}
+  .back{border:0;background:none;cursor:pointer;color:var(--ink);display:flex}
+  .demo{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(31,58,104,.9);color:#fff;font-size:10px;padding:3px 10px;border-radius:999px;font-weight:500;white-space:nowrap;z-index:2}
+  .toast{position:absolute;bottom:100px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:13px;padding:8px 14px;border-radius:999px;opacity:0;transition:.25s;pointer-events:none;white-space:nowrap}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="demo" id="demo"></div>
+  <main id="main"></main>
+  <nav id="nav"></nav>
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+/* ───────────── Sample data ─────────────
+   Shapes mirror the KSPO public datasets on data.go.kr.
+   Values are SAMPLE data for the demo; live API integration is planned. */
+const DATA = {
+  // 한국체육산업개발주식회사_영문 공연정보 (+ 대관정보)
+  events: [
+    {id:'e1', title:'NOVA World Tour in Seoul', venue:'dome',   date:'2026-12-12', time:'18:00', type:'concert', end:'20:30'},
+    {id:'e2', title:'LUMEN Fan Meeting 2027',   venue:'handball',date:'2026-12-13', time:'17:00', type:'fanmeeting', end:'19:00'},
+    {id:'e3', title:'Seoul Winter Jazz Night',  venue:'art',    date:'2026-12-19', time:'19:30', type:'jazz', end:'21:30'},
+  ],
+  // derived from 차량입출차·공연·날씨 연계 데이터 (relative crowding 0–100)
+  forecast: { e1:{rain:70, temp:4, best:'15:30 – 16:30', hours:[[13,20],[14,30],[15,42],[16,60],[17,95],[18,82],[19,28],[20,58],[21,92]]},
+              e2:{rain:10, temp:6, best:'14:30 – 15:30', hours:[[12,15],[13,25],[14,35],[15,55],[16,80],[17,70],[18,25],[19,65],[20,50]]},
+              e3:{rain:0,  temp:2, best:'18:00 – 18:45', hours:[[16,15],[17,25],[18,40],[19,60],[20,35],[21,30],[22,55],[23,20]]} },
+  // 실시간 주차현황 + 주차장 혼잡도 정보 (원활/혼잡/만차)
+  parking: [{gate:'east2', cars:312, level:'busy'},{gate:'south2', cars:488, level:'full'},{gate:'north2', cars:96, level:'ok'}],
+  // 서울시 지하철 실시간 도착정보 (타 기관 공동활용)
+  subway: [{stn:'olympic', next:[3,8]},{stn:'mongchon', next:[5,11]}],
+  // 올림픽공원 및 미사경정공원 유실물 정보
+  lost: [
+    {id:'L0421', item:'lightstick', place:'dome', date:'2026-12-12'},
+    {id:'L0426', item:'pouch',      place:'gate', date:'2026-12-12'},
+    {id:'L0398', item:'phone',      place:'dome', date:'2026-12-06'},
+    {id:'L0377', item:'umbrella',   place:'lawn', date:'2026-12-05'},
+  ],
+};
+
+/* ───────────── Glossary-based i18n ───────────── */
+const I = {
+ en:{tag:'Your concert companion at Olympic Park', demo:'DEMO · sample data', tomorrow:'COMING UP',
+   alert:(t,b)=>`Rain expected. Arrive ${b} to skip the longest lines at ${t}.`, upcoming:'Upcoming at Olympic Park', all:'See all',
+   evNote:'Data: KSPO English performance info + venue rental info · translated with a fixed venue glossary',
+   tabs:['Events','Forecast','Live','Lost & Found'],
+   venue:{dome:'KSPO DOME',handball:'SK Handball Stadium',art:'Woori Financial Art Hall',gate:'Gate area',lawn:'88 Lawn'},
+   type:{concert:'Concert',fanmeeting:'Fan meeting',jazz:'Jazz'},
+   weather:(r,t)=>`Rain ${r}% · ${t}°C  (KMA forecast)`, crowd:'Crowd forecast around the venue', lv:{ok:'Smooth',busy:'Busy',full:'Full'},
+   bestK:'BEST ARRIVAL', bestP:'On show days, entries peak about an hour before the start. Exit crowds peak right after the show ends.',
+   remind:t=>`Remind me at ${t}`, reminded:t=>`✓ Reminder set for ${t}`,
+   fcNote:'Estimated from KSPO 2025 vehicle entry · performance · weather data. Shows relative crowding, not headcount.',
+   liveNow:'Live now', updated:'updated 2 min ago', parking:'Parking at Olympic Park', gate:{east2:'East Gate 2',south2:'South Gate 2',north2:'North Gate 2'},
+   cars:n=>`${n} cars parked`, subway:'Nearby subway', stn:{olympic:'Olympic Park Stn · Line 5, 9',mongchon:'Mongchontoseong Stn · Line 8'},
+   min:a=>a.map(x=>x+' min').join(' · '), after:e=>`After the show (ends ~${e})`, leave:t=>`Leave at ${t}`,
+   wait:'Wait it out: Bangi-dong food alley is a 7-min walk.', notify:'Notify me when it clears', notified:'✓ We\'ll notify you',
+   lostT:'Lost & Found', lostSub:'Olympic Park · Misa Regatta Park', ph:'Search items (e.g. light stick)', found:n=>`${n} item(s) found`,
+   item:{lightstick:'Light stick (black)',pouch:'Light stick pouch (white)',phone:'Phone (blue case)',umbrella:'Umbrella (navy)'},
+   foundOn:d=>`Found ${d}`, storage:'In storage', staff:'SHOW THIS TO STAFF', dir:'Directions to the info center',
+   tr:i=>`"I lost my ${i.toLowerCase()} at Olympic Park. I'd like to check the lost-and-found record."`, toast:'Demo only — maps link coming soon'},
+ zh:{tag:'你的奥林匹克公园观演伙伴', demo:'演示 · 示例数据', tomorrow:'即将开演',
+   alert:(t,b)=>`预计有雨。${b} 到达可避开 ${t} 最长的排队。`, upcoming:'奥林匹克公园近期演出', all:'全部',
+   evNote:'数据：KSPO 英文演出信息 + 场馆租借信息 · 场馆名称采用固定译名表翻译',
+   tabs:['演出','拥挤预测','实时','失物招领'],
+   venue:{dome:'KSPO DOME',handball:'SK手球竞技场',art:'友利金融艺术厅',gate:'入口附近',lawn:'88草坪广场'},
+   type:{concert:'演唱会',fanmeeting:'见面会',jazz:'爵士'},
+   weather:(r,t)=>`降雨概率 ${r}% · ${t}°C（气象厅预报）`, crowd:'场馆周边拥挤度预测', lv:{ok:'畅通',busy:'拥挤',full:'爆满'},
+   bestK:'最佳到达时间', bestP:'演出当天，开演前约一小时入场人数最多；散场后人流会立即达到高峰。',
+   remind:t=>`${t} 提醒我`, reminded:t=>`✓ 已设置 ${t} 提醒`,
+   fcNote:'根据 KSPO 2025 年车辆进出·演出·天气数据估算，仅表示相对拥挤程度，并非实际人数。',
+   liveNow:'实时现场', updated:'2 分钟前更新', parking:'奥林匹克公园停车场', gate:{east2:'东2门',south2:'南2门',north2:'北2门'},
+   cars:n=>`已停 ${n} 辆`, subway:'附近地铁', stn:{olympic:'奥林匹克公园站 · 5、9号线',mongchon:'梦村土城站 · 8号线'},
+   min:a=>a.map(x=>x+' 分钟').join(' · '), after:e=>`演出结束后（约 ${e}）`, leave:t=>`${t} 出发`,
+   wait:'可以先去步行 7 分钟的芳荑洞美食街坐一坐再走。', notify:'人少时通知我', notified:'✓ 人少时会通知你',
+   lostT:'失物招领', lostSub:'奥林匹克公园 · 渼沙赛艇公园', ph:'搜索物品（如：应援棒）', found:n=>`找到 ${n} 件物品`,
+   item:{lightstick:'应援棒（黑色）',pouch:'应援棒收纳包（白色）',phone:'手机（蓝色手机壳）',umbrella:'雨伞（藏青色）'},
+   foundOn:d=>`${d} 拾获`, storage:'保管中', staff:'请出示给工作人员', dir:'前往服务中心',
+   tr:i=>`"我在奥林匹克公园丢了${i}，想确认一下失物保管记录。"`, toast:'演示版本——地图链接即将上线'},
+ ja:{tag:'オリンピック公園の公演おともガイド', demo:'デモ · サンプルデータ', tomorrow:'まもなく公演',
+   alert:(t,b)=>`雨の予報です。${b}に到着すれば${t}の長い行列を避けられます。`, upcoming:'オリンピック公園の公演予定', all:'すべて',
+   evNote:'データ：KSPO英文公演情報＋施設貸出情報 · 会場名は固定用語集で翻訳',
+   tabs:['公演','混雑予報','ライブ','落とし物'],
+   venue:{dome:'KSPO DOME',handball:'SKハンドボール競技場',art:'ウリ金融アートホール',gate:'入口付近',lawn:'88芝生広場'},
+   type:{concert:'コンサート',fanmeeting:'ファンミーティング',jazz:'ジャズ'},
+   weather:(r,t)=>`降水確率 ${r}% · ${t}°C（気象庁予報）`, crowd:'会場周辺の混雑予報', lv:{ok:'スムーズ',busy:'混雑',full:'満杯'},
+   bestK:'おすすめ到着時間', bestP:'公演日は開演の約1時間前に入場が集中します。終演直後は帰りの人波がピークになります。',
+   remind:t=>`${t}にリマインド`, reminded:t=>`✓ ${t}にリマインド設定済み`,
+   fcNote:'KSPO 2025年の車両入出庫・公演・天気データから推定。実際の人数ではなく相対的な混雑度です。',
+   liveNow:'現在の状況', updated:'2分前に更新', parking:'オリンピック公園の駐車場', gate:{east2:'東2門',south2:'南2門',north2:'北2門'},
+   cars:n=>`${n}台駐車中`, subway:'最寄りの地下鉄', stn:{olympic:'オリンピック公園駅 · 5・9号線',mongchon:'夢村土城駅 · 8号線'},
+   min:a=>a.map(x=>x+'分').join(' · '), after:e=>`終演後（${e}頃）`, leave:t=>`${t}に出発`,
+   wait:'徒歩7分の芳荑洞グルメ横丁で時間をずらすのがおすすめです。', notify:'空いたら通知する', notified:'✓ 空いたらお知らせします',
+   lostT:'落とし物', lostSub:'オリンピック公園 · 渼沙漕艇公園', ph:'品名で検索（例：ペンライト）', found:n=>`${n}件見つかりました`,
+   item:{lightstick:'ペンライト（黒）',pouch:'ペンライトポーチ（白）',phone:'スマートフォン（青いケース）',umbrella:'傘（紺）'},
+   foundOn:d=>`${d} 拾得`, storage:'保管中', staff:'スタッフに見せてください', dir:'案内センターへの道順',
+   tr:i=>`「オリンピック公園で${i}をなくしました。落とし物の保管記録を確認したいです。」`, toast:'デモ版です — 地図リンクは準備中'},
+ ko:{tag:'올림픽공원 공연 동행 가이드', demo:'데모 · 샘플 데이터', tomorrow:'다가오는 공연',
+   alert:(t,b)=>`비 예보가 있어요. ${b}에 도착하면 ${t}의 긴 줄을 피할 수 있어요.`, upcoming:'올림픽공원 공연 일정', all:'전체 보기',
+   evNote:'데이터: KSPO 영문 공연정보 + 대관정보 · 공연장 이름은 고정 용어집으로 번역',
+   tabs:['공연','혼잡 예보','실시간','유실물'],
+   venue:{dome:'KSPO DOME',handball:'SK핸드볼경기장',art:'우리금융아트홀',gate:'출입구 부근',lawn:'88잔디마당'},
+   type:{concert:'콘서트',fanmeeting:'팬미팅',jazz:'재즈'},
+   weather:(r,t)=>`강수확률 ${r}% · ${t}°C (기상청 예보)`, crowd:'공연장 주변 혼잡 예보', lv:{ok:'원활',busy:'혼잡',full:'만차'},
+   bestK:'추천 도착 시간', bestP:'공연일에는 시작 1시간 전쯤 입장이 몰리고, 공연이 끝난 직후 귀가 인파가 가장 많아요.',
+   remind:t=>`${t}에 알림 받기`, reminded:t=>`✓ ${t} 알림 설정됨`,
+   fcNote:'KSPO 2025년 차량 입출차·공연·날씨 데이터로 추정한 상대적 혼잡도이며, 실제 인원수가 아니에요.',
+   liveNow:'실시간 현황', updated:'2분 전 업데이트', parking:'올림픽공원 주차장', gate:{east2:'동2문',south2:'남2문',north2:'북2문'},
+   cars:n=>`${n}대 주차 중`, subway:'가까운 지하철', stn:{olympic:'올림픽공원역 · 5·9호선',mongchon:'몽촌토성역 · 8호선'},
+   min:a=>a.map(x=>x+'분').join(' · '), after:e=>`공연 종료 후 (약 ${e})`, leave:t=>`${t} 출발`,
+   wait:'도보 7분 거리 방이동 먹자골목에서 기다렸다 가면 덜 붐벼요.', notify:'한산해지면 알림', notified:'✓ 한산해지면 알려드릴게요',
+   lostT:'유실물', lostSub:'올림픽공원 · 미사경정공원', ph:'물품 검색 (예: 응원봉)', found:n=>`${n}건 찾았어요`,
+   item:{lightstick:'응원봉(검정)',pouch:'응원봉 파우치(흰색)',phone:'휴대전화(파란 케이스)',umbrella:'우산(남색)'},
+   foundOn:d=>`${d} 습득`, storage:'보관 중', staff:'직원에게 보여주세요', dir:'안내센터 길찾기',
+   tr:i=>`"올림픽공원에서 ${i}을(를) 잃어버렸어요."`, toast:'데모 버전이에요 — 지도 연결 예정'},
+};
+// Korean staff card (always Korean, with correct particle)
+const KO_ITEM = {lightstick:['응원봉','을'],pouch:['응원봉 파우치','를'],phone:['휴대전화','를'],umbrella:['우산','을']};
+const KO_PLACE = {dome:'KSPO DOME',gate:'출입구 부근',lawn:'88잔디마당'};
+const LOCALE = {en:'en-US',zh:'zh-CN',ja:'ja-JP',ko:'ko-KR'};
+
+/* ───────────── State & helpers ───────────── */
+const S = {lang:'en', tab:0, ev:'e1', q:'', sel:'L0421', reminded:{}, notified:false};
+const $ = id => document.getElementById(id);
+const t = () => I[S.lang];
+const fmt = (iso, o) => new Intl.DateTimeFormat(LOCALE[S.lang], o).format(new Date(iso+'T12:00:00'));
+const lvl = v => v < 50 ? 'ok' : v < 80 ? 'busy' : 'full';
+const COLOR = {ok:'#3FB871', busy:'#F28C1B', full:'#E04848'};
+const remindAt = b => { const [h,m] = b.split(' – ')[0].split(':').map(Number); const d = h*60+m-30; return `${String(Math.floor(d/60)).padStart(2,'0')}:${String(d%60).padStart(2,'0')}`; };
+const ICON = {
+  cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  chart:'<path d="M5 20V11M11 20V5M17 20v-7M3 20h18"/>',
+  live:'<circle cx="12" cy="12" r="3"/><path d="M6.3 6.3a8 8 0 0 0 0 11.4M17.7 6.3a8 8 0 0 1 0 11.4"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
+  car:'<path d="M4 16V12l2-5h12l2 5v4zM4 16v3M20 16v3M7.5 13h.01M16.5 13h.01"/>',
+  train:'<rect x="5" y="3" width="14" height="14" rx="3"/><path d="M5 10h14M8.5 21l2-4M15.5 21l-2-4"/>',
+  exit:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
+  bell:'<path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8M10 20a2 2 0 0 0 4 0"/>',
+  rain:'<path d="M17 15a4 4 0 0 0-1-7.9A6 6 0 0 0 4.5 9 3.5 3.5 0 0 0 6 15zM8 19l-1 2M12 19l-1 2M16 19l-1 2"/>',
+  back:'<path d="m15 18-6-6 6-6"/>', chev:'<path d="m9 18 6-6-6-6"/>',
+};
+const ic = (k, cls='') => `<svg class="ic ${cls}" viewBox="0 0 24 24">${ICON[k]}</svg>`;
+const pill = l => `<span class="pill ${l}">${t().lv[l]}</span>`;
+function toast(msg){ const el=$('toast'); el.textContent=msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),1600); }
+
+/* ───────────── Screens ───────────── */
+const langChips = () => `<div class="chips">${[['en','EN'],['zh','中文'],['ja','日本語'],['ko','한국어']]
+  .map(([k,l])=>`<button class="chip ${S.lang===k?'on':''}" data-lang="${k}">${l}</button>`).join('')}</div>`;
+
+function events(){
+  const L=t(), e0=DATA.events[0], f0=DATA.forecast[e0.id];
+  return `<div><h1>OlparkMate</h1><p class="sub">${L.tag}</p></div>${langChips()}
+  <div class="card alert"><div class="row" style="color:var(--orange)">${ic('bell','s')}<span class="k">${L.tomorrow} · ${e0.title}</span></div>
+    <p>${L.alert(L.venue[e0.venue], f0.best.replace(' – ','–'))}</p></div>
+  <div class="row between"><h2>${L.upcoming}</h2><span class="sub" style="color:var(--orange);font-weight:500">${L.all}</span></div>
+  ${DATA.events.map(e=>`<button class="card ev" data-ev="${e.id}">
+     <div class="date"><small>${fmt(e.date,{weekday:'short'}).toUpperCase()}</small><b>${+e.date.slice(8)}</b><small>${fmt(e.date,{month:'short'}).toUpperCase()}</small></div>
+     <div class="info"><span class="t">${e.title}</span><span class="v">${L.venue[e.venue]}</span><span class="m">${e.time} · ${L.type[e.type]}</span></div>
+     <span style="color:#A3ADBD">${ic('chev','s')}</span></button>`).join('')}
+  <p class="cap">${L.evNote}</p>`;
+}
+
+function forecast(){
+  const L=t(), e=DATA.events.find(x=>x.id===S.ev), f=DATA.forecast[e.id], at=remindAt(f.best), on=S.reminded[e.id];
+  return `<div class="row"><button class="back" data-tab="0">${ic('back')}</button><h2>${e.title}</h2></div>
+  <div class="card" style="gap:8px"><div class="chips"><span class="chip on">${L.venue[e.venue]}</span><span class="chip">${fmt(e.date,{month:'short',day:'numeric',weekday:'short'})} · ${e.time}</span></div>
+    <div class="row sub" style="font-weight:500"><span style="color:#3D7BD9">${ic('rain','s')}</span>${L.weather(f.rain,f.temp)}</div></div>
+  <div class="card" style="gap:12px"><h2 style="font-size:15px">${L.crowd}</h2>
+    <div class="chart">${f.hours.map(([h,v])=>`<div class="bar"><i style="height:${Math.round(v*1.2)}px;background:${COLOR[lvl(v)]}"></i>${h}</div>`).join('')}</div>
+    <div class="row" style="gap:6px">${pill('ok')}${pill('busy')}${pill('full')}</div></div>
+  <div class="card best"><small>${L.bestK}</small><b>${f.best}</b><p>${L.bestP}</p></div>
+  <button class="btn ${on?'done':''}" data-remind="${e.id}">${on?L.reminded(at):L.remind(at)}</button>
+  <div class="chips">${DATA.events.map(x=>`<button class="chip ${x.id===S.ev?'on':''}" data-pick="${x.id}">${fmt(x.date,{month:'numeric',day:'numeric'})} ${x.title.split(' ')[0]}</button>`).join('')}</div>
+  <p class="cap">${L.fcNote}</p>`;
+}
+
+function live(){
+  const L=t(), e=DATA.events.find(x=>x.id===S.ev);
+  return `<div class="row between"><h1 style="font-size:24px">${L.liveNow}</h1><span class="pill live">LIVE</span></div>
+  <p class="sub" style="margin-top:-8px">${e.title} · ${L.updated}</p>
+  <div class="card" style="gap:12px"><div class="row" style="color:var(--navy)">${ic('car','s')}<h2 style="font-size:15px;color:var(--ink)">${L.parking}</h2></div>
+    ${DATA.parking.map(p=>`<div class="li"><div><div class="n">${L.gate[p.gate]}</div><div class="d">${L.cars(p.cars)}</div></div>${pill(p.level)}</div>`).join('')}</div>
+  <div class="card" style="gap:12px"><div class="row" style="color:var(--navy)">${ic('train','s')}<h2 style="font-size:15px;color:var(--ink)">${L.subway}</h2></div>
+    ${DATA.subway.map(s=>`<div class="li"><span class="n" style="font-size:13px">${L.stn[s.stn]}</span><b style="font-size:13px;color:var(--navy);white-space:nowrap">${L.min(s.next)}</b></div>`).join('')}</div>
+  <div class="card" style="gap:12px"><div class="row" style="color:var(--navy)">${ic('exit','s')}<h2 style="font-size:15px;color:var(--ink)">${L.after(e.end)}</h2></div>
+    <div class="li"><span class="n">${L.leave(e.end)}</span>${pill('full')}</div>
+    <div class="li"><span class="n">${L.leave(addMin(e.end,30))}</span>${pill('ok')}</div>
+    <p class="d" style="font-size:12px;color:var(--sub)">${L.wait}</p></div>
+  <button class="btn line ${S.notified?'done':''}" data-notify>${S.notified?L.notified:L.notify}</button>`;
+}
+function addMin(hm,n){const [h,m]=hm.split(':').map(Number);const d=h*60+m+n;return `${String(Math.floor(d/60)%24).padStart(2,'0')}:${String(d%60).padStart(2,'0')}`;}
+
+function lost(){
+  const L=t(), q=S.q.trim().toLowerCase();
+  const list = DATA.lost.filter(x=>!q || Object.values(I).some(l=>l.item[x.item].toLowerCase().includes(q)) || KO_ITEM[x.item][0].includes(q));
+  if(!list.find(x=>x.id===S.sel) && list[0]) S.sel=list[0].id;
+  const sel = DATA.lost.find(x=>x.id===S.sel);
+  const [koName,josa] = KO_ITEM[sel.item];
+  const d = {m:+sel.date.slice(5,7), day:+sel.date.slice(8)};
+  return `<div><h1 style="font-size:24px">${L.lostT}</h1><p class="sub">${L.lostSub}</p></div>
+  <label class="search"><span style="color:var(--sub)">${ic('search','s')}</span><input id="q" value="${S.q}" placeholder="${L.ph}" autocomplete="off"></label>
+  <div class="card" style="gap:12px"><span class="sub" style="font-size:12px;font-weight:500">${L.found(list.length)}</span>
+    ${list.map(x=>`<div class="li item ${x.id===S.sel?'sel':''}" data-sel="${x.id}"><div style="min-width:0"><div class="n" style="font-weight:700">${L.item[x.item]}</div>
+      <div class="d">${L.foundOn(fmt(x.date,{month:'short',day:'numeric'}))} · ${L.venue[x.place]} · #${x.id.slice(1)}</div></div><span class="tag">${L.storage}</span></div>`).join('')}</div>
+  <div class="card ko" style="gap:8px"><span class="k">${L.staff}${S.lang==='ko'?'':' · 직원에게 보여주세요'}</span>
+    <p class="big">올림픽공원에서 ${koName}${josa} 잃어버렸어요.<br>유실물 보관 내역을 확인하고 싶어요.</p>
+    <p class="ref">#${sel.id.slice(1)} · ${d.m}월 ${d.day}일 습득 · ${KO_PLACE[sel.place]}</p>
+    ${S.lang==='ko'?'':`<p class="tr">${L.tr(L.item[sel.item].replace(/[（(].*$/,'').trim())}</p>`}</div>
+  <button class="btn" data-dir>${L.dir}</button>`;
+}
+
+/* ───────────── Render & events ───────────── */
+const SCREENS=[events,forecast,live,lost], TABICON=['cal','chart','live','search'];
+function render(keepFocus){
+  document.documentElement.lang = S.lang; document.body.className = 'lang-'+S.lang;
+  $('demo').textContent = t().demo;
+  $('main').innerHTML = SCREENS[S.tab]();
+  $('nav').innerHTML = t().tabs.map((l,i)=>`<button class="${S.tab===i?'on':''}" data-tab="${i}"><svg viewBox="0 0 24 24">${ICON[TABICON[i]]}</svg>${l}</button>`).join('');
+  if(keepFocus){const q=$('q'); q.focus(); q.setSelectionRange(q.value.length,q.value.length);}
+}
+document.addEventListener('click', e=>{
+  const b = e.target.closest('[data-lang],[data-tab],[data-ev],[data-remind],[data-pick],[data-notify],[data-sel],[data-dir]'); if(!b) return;
+  const d=b.dataset;
+  if(d.lang){S.lang=d.lang;}
+  else if(d.tab!==undefined){S.tab=+d.tab; $('main').scrollTop=0;}
+  else if(d.ev){S.ev=d.ev; S.tab=1;}
+  else if(d.pick){S.ev=d.pick;}
+  else if(d.remind){S.reminded[d.remind]=!S.reminded[d.remind];}
+  else if('notify' in d){S.notified=!S.notified;}
+  else if(d.sel){S.sel=d.sel;}
+  else if('dir' in d){toast(t().toast); return;}
+  render();
+});
+document.addEventListener('input', e=>{ if(e.target.id==='q' && !e.isComposing){ S.q=e.target.value; render(true);} });
+document.addEventListener('compositionend', e=>{ if(e.target.id==='q'){ S.q=e.target.value; render(true);} });
+render();
+</script>
+</body>
+</html>

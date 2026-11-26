@@ -1,0 +1,218 @@
+{
+  "_note": "SAMPLE data shaped after KSPO public datasets (data.go.kr). Not real records.",
+  "events": [
+    {
+      "id": "e1",
+      "title": "NOVA World Tour in Seoul",
+      "venue": "dome",
+      "date": "2026-12-12",
+      "time": "18:00",
+      "type": "concert",
+      "end": "20:30"
+    },
+    {
+      "id": "e2",
+      "title": "LUMEN Fan Meeting 2027",
+      "venue": "handball",
+      "date": "2026-12-13",
+      "time": "17:00",
+      "type": "fanmeeting",
+      "end": "19:00"
+    },
+    {
+      "id": "e3",
+      "title": "Seoul Winter Jazz Night",
+      "venue": "art",
+      "date": "2026-12-19",
+      "time": "19:30",
+      "type": "jazz",
+      "end": "21:30"
+    }
+  ],
+  "forecast": {
+    "e1": {
+      "rain": 70,
+      "temp": 4,
+      "best": "15:30 – 16:30",
+      "hours": [
+        [
+          13,
+          20
+        ],
+        [
+          14,
+          30
+        ],
+        [
+          15,
+          42
+        ],
+        [
+          16,
+          60
+        ],
+        [
+          17,
+          95
+        ],
+        [
+          18,
+          82
+        ],
+        [
+          19,
+          28
+        ],
+        [
+          20,
+          58
+        ],
+        [
+          21,
+          92
+        ]
+      ]
+    },
+    "e2": {
+      "rain": 10,
+      "temp": 6,
+      "best": "14:30 – 15:30",
+      "hours": [
+        [
+          12,
+          15
+        ],
+        [
+          13,
+          25
+        ],
+        [
+          14,
+          35
+        ],
+        [
+          15,
+          55
+        ],
+        [
+          16,
+          80
+        ],
+        [
+          17,
+          70
+        ],
+        [
+          18,
+          25
+        ],
+        [
+          19,
+          65
+        ],
+        [
+          20,
+          50
+        ]
+      ]
+    },
+    "e3": {
+      "rain": 0,
+      "temp": 2,
+      "best": "18:00 – 18:45",
+      "hours": [
+        [
+          16,
+          15
+        ],
+        [
+          17,
+          25
+        ],
+        [
+          18,
+          40
+        ],
+        [
+          19,
+          60
+        ],
+        [
+          20,
+          35
+        ],
+        [
+          21,
+          30
+        ],
+        [
+          22,
+          55
+        ],
+        [
+          23,
+          20
+        ]
+      ]
+    }
+  },
+  "parking": [
+    {
+      "gate": "east2",
+      "cars": 312,
+      "level": "busy"
+    },
+    {
+      "gate": "south2",
+      "cars": 488,
+      "level": "full"
+    },
+    {
+      "gate": "north2",
+      "cars": 96,
+      "level": "ok"
+    }
+  ],
+  "subway": [
+    {
+      "stn": "olympic",
+      "next": [
+        3,
+        8
+      ]
+    },
+    {
+      "stn": "mongchon",
+      "next": [
+        5,
+        11
+      ]
+    }
+  ],
+  "lost": [
+    {
+      "id": "L0421",
+      "item": "lightstick",
+      "place": "dome",
+      "date": "2026-12-12"
+    },
+    {
+      "id": "L0426",
+      "item": "pouch",
+      "place": "gate",
+      "date": "2026-12-12"
+    },
+    {
+      "id": "L0398",
+      "item": "phone",
+      "place": "dome",
+      "date": "2026-12-06"
+    },
+    {
+      "id": "L0377",
+      "item": "umbrella",
+      "place": "lawn",
+      "date": "2026-12-05"
+    }
+  ]
+}
