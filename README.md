@@ -6,7 +6,7 @@
 **2026년도 한국체육산업개발(주) 공공데이터 활용 경진대회 출품작**
 
 - 🔗 **웹 데모:** https://dearosmar.github.io/olparkmate/
-- 🎨 **Figma 프로토타입:** https://www.figma.com/design/4GDj1eA2RxmUsMl6Tif5GI
+- 🎨 **Figma 프로토타입:** [https://www.figma.com/design/4GDj1eA2RxmUsMl6Tif5GI](https://www.figma.com/design/4GDj1eA2RxmUsMl6Tif5GI/%EC%98%AC%ED%8C%8D%EB%A9%94%EC%9D%B4%ED%8A%B8-OlparkMate-%EB%8D%B0%EB%AA%A8?node-id=0-1&t=KGIZYvAHBVxulWrk-1)
 
 > ⚠️ 현재 데모의 공연명·수치는 **공공데이터 응답 형식에 맞춘 샘플 데이터**입니다. 실제 API 연동은 2027년 1~2월에 진행할 예정입니다.
 
