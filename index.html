@@ -71,6 +71,18 @@
   .ic.s{width:18px;height:18px}
   .back{border:0;background:none;cursor:pointer;color:var(--ink);display:flex}
   .demo{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(31,58,104,.9);color:#fff;font-size:10px;padding:3px 10px;border-radius:999px;font-weight:500;white-space:nowrap;z-index:2}
+  .notice{background:#EAF0FA;border-left:4px solid var(--navy)}
+  .notice .k{font-size:11px;font-weight:700;color:var(--navy)}
+  .notice p{font-size:14px;line-height:1.5}
+  .mini{border:1px solid #D6DCE6;background:#fff;color:var(--navy);border-radius:999px;padding:6px 12px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+  .mini.done{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+  .walk .w{display:flex;gap:12px;align-items:flex-start}
+  .walk .w b{font-size:14px}.walk .w span{font-size:12px;color:var(--sub);display:block;margin-top:2px}
+  .walk .mins{flex:none;background:#E3F6EA;color:var(--ok);font-size:12px;font-weight:700;border-radius:8px;padding:4px 8px}
+  .fb{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .fb button{border:1px solid #D6DCE6;background:#fff;border-radius:12px;padding:10px 6px;font:inherit;font-size:12px;font-weight:500;cursor:pointer;color:var(--ink)}
+  .fb button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .same{font-size:12px;color:var(--navy);background:#EAF0FA;border-radius:10px;padding:8px 10px;line-height:1.45}
   .toast{position:absolute;bottom:100px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:13px;padding:8px 14px;border-radius:999px;opacity:0;transition:.25s;pointer-events:none;white-space:nowrap}
   .toast.show{opacity:1}
 </style>
@@ -94,6 +106,12 @@ const DATA = {
     {id:'e2', title:'LUMEN Fan Meeting 2027',   venue:'handball',date:'2026-12-13', time:'17:00', type:'fanmeeting', end:'19:00'},
     {id:'e3', title:'Seoul Winter Jazz Night',  venue:'art',    date:'2026-12-19', time:'19:30', type:'jazz', end:'21:30'},
   ],
+  // 올림픽공원 대관정보 — other events on the same day (summed into the forecast)
+  rentals: [{date:'2026-12-12', title:'Winter Futsal Cup', venue:'handball'}],
+  // 올림픽공원 올팍소식 — official notices (translated)
+  notices: [{event:'e1', key:'gate'}],
+  // 올림픽공원 수목정보 + 생태공원 갤러리 — short walks for early arrivals
+  walks: [{key:'fortress', min:25},{key:'lawn', min:15}],
   // derived from 차량입출차·공연·날씨 연계 데이터 (relative crowding 0–100)
   forecast: { e1:{rain:70, temp:4, best:'15:30 – 16:30', hours:[[13,20],[14,30],[15,42],[16,60],[17,95],[18,82],[19,28],[20,58],[21,92]]},
               e2:{rain:10, temp:6, best:'14:30 – 15:30', hours:[[12,15],[13,25],[14,35],[15,55],[16,80],[17,70],[18,25],[19,65],[20,50]]},
@@ -113,7 +131,12 @@ const DATA = {
 
 /* ───────────── Glossary-based i18n ───────────── */
 const I = {
- en:{tag:'Your concert companion at Olympic Park', demo:'DEMO · sample data', tomorrow:'COMING UP',
+ en:{notice:'OFFICIAL NOTICE', noticeTxt:{gate:'Gate 3 entry closes at 17:40 for NOVA World Tour. Please use Gate 1 or 2.'}, noticeSrc:'From Olympic Park notices · auto-translated',
+   offline:'Save offline', saved:'✓ Saved offline', savedToast:'Events, park map and Korean cards saved for offline use',
+   same:(t,v)=>`Also on this day: ${t} at ${v} — included in the forecast.`,
+   walkT:'Arrived early? Take a short walk', walk:{fortress:['Mongchontoseong Fortress loop','Lone Tree — the park\'s favorite photo spot'],lawn:['88 Lawn → World Peace Gate','A zelkova-lined path, flat and stroller-friendly']}, walkSrc:'Tree & gallery info: KSPO Olympic Park data', minS:m=>m+' min',
+   fbT:'How crowded is it where you are?', fb:['Less than shown','About right','More than shown'], fbThanks:'Thanks! Your report helps fix the forecast.', fbNote:'Anonymous reports are shared with KSPO as monthly insights.',
+   tag:'Your concert companion at Olympic Park', demo:'DEMO · sample data', tomorrow:'COMING UP',
    alert:(t,b)=>`Rain expected. Arrive ${b} to skip the longest lines at ${t}.`, upcoming:'Upcoming at Olympic Park', all:'See all',
    evNote:'Data: KSPO English performance info + venue rental info · translated with a fixed venue glossary',
    tabs:['Events','Forecast','Live','Lost & Found'],
@@ -131,7 +154,12 @@ const I = {
    item:{lightstick:'Light stick (black)',pouch:'Light stick pouch (white)',phone:'Phone (blue case)',umbrella:'Umbrella (navy)'},
    foundOn:d=>`Found ${d}`, storage:'In storage', staff:'SHOW THIS TO STAFF', dir:'Directions to the info center',
    tr:i=>`"I lost my ${i.toLowerCase()} at Olympic Park. I'd like to check the lost-and-found record."`, toast:'Demo only — maps link coming soon'},
- zh:{tag:'你的奥林匹克公园观演伙伴', demo:'演示 · 示例数据', tomorrow:'即将开演',
+ zh:{notice:'官方通知', noticeTxt:{gate:'NOVA World Tour 当天，3号入口 17:40 停止入场，请从 1 号或 2 号入口进场。'}, noticeSrc:'来源：奥林匹克公园公告 · 自动翻译',
+   offline:'离线保存', saved:'✓ 已离线保存', savedToast:'演出、公园地图和韩语卡片已保存，可离线使用',
+   same:(t,v)=>`当天还有：${v}的「${t}」——已计入预测。`,
+   walkT:'到早了？去公园散散步', walk:{fortress:['梦村土城环线','孤独树——公园最受欢迎的拍照点'],lawn:['88草坪广场 → 世界和平之门','榉树林荫道，路面平坦，适合推婴儿车']}, walkSrc:'树木与画廊信息：KSPO 奥林匹克公园数据', minS:m=>m+' 分钟',
+   fbT:'你所在的位置拥挤吗？', fb:['比显示的少','差不多','比显示的多'], fbThanks:'谢谢！你的反馈会用于修正预测。', fbNote:'匿名反馈将以月度报告形式提供给 KSPO。',
+   tag:'你的奥林匹克公园观演伙伴', demo:'演示 · 示例数据', tomorrow:'即将开演',
    alert:(t,b)=>`预计有雨。${b} 到达可避开 ${t} 最长的排队。`, upcoming:'奥林匹克公园近期演出', all:'全部',
    evNote:'数据：KSPO 英文演出信息 + 场馆租借信息 · 场馆名称采用固定译名表翻译',
    tabs:['演出','拥挤预测','实时','失物招领'],
@@ -149,7 +177,12 @@ const I = {
    item:{lightstick:'应援棒（黑色）',pouch:'应援棒收纳包（白色）',phone:'手机（蓝色手机壳）',umbrella:'雨伞（藏青色）'},
    foundOn:d=>`${d} 拾获`, storage:'保管中', staff:'请出示给工作人员', dir:'前往服务中心',
    tr:i=>`"我在奥林匹克公园丢了${i}，想确认一下失物保管记录。"`, toast:'演示版本——地图链接即将上线'},
- ja:{tag:'オリンピック公園の公演おともガイド', demo:'デモ · サンプルデータ', tomorrow:'まもなく公演',
+ ja:{notice:'公式のお知らせ', noticeTxt:{gate:'NOVA World Tour当日、3番ゲートは17:40に入場を締め切ります。1番または2番ゲートをご利用ください。'}, noticeSrc:'出典：オリンピック公園のお知らせ · 自動翻訳',
+   offline:'オフライン保存', saved:'✓ 保存済み', savedToast:'公演・公園マップ・韓国語カードをオフライン用に保存しました',
+   same:(t,v)=>`同日開催：${v}の「${t}」— 予報に反映済みです。`,
+   walkT:'早く着いたら公園をお散歩', walk:{fortress:['夢村土城ぐるり道','ひとりぼっちの木 — 公園いちばんの撮影スポット'],lawn:['88芝生広場 → 世界平和の門','ケヤキ並木の平らな道、ベビーカーでも安心']}, walkSrc:'樹木・ギャラリー情報：KSPO オリンピック公園データ', minS:m=>m+'分',
+   fbT:'今いる場所の混雑はどうですか？', fb:['表示より空いている','ほぼ同じ','表示より混んでいる'], fbThanks:'ありがとうございます！報告は予報の補正に使われます。', fbNote:'匿名の報告は月次レポートとしてKSPOに共有されます。',
+   tag:'オリンピック公園の公演おともガイド', demo:'デモ · サンプルデータ', tomorrow:'まもなく公演',
    alert:(t,b)=>`雨の予報です。${b}に到着すれば${t}の長い行列を避けられます。`, upcoming:'オリンピック公園の公演予定', all:'すべて',
    evNote:'データ：KSPO英文公演情報＋施設貸出情報 · 会場名は固定用語集で翻訳',
    tabs:['公演','混雑予報','ライブ','落とし物'],
@@ -167,7 +200,12 @@ const I = {
    item:{lightstick:'ペンライト（黒）',pouch:'ペンライトポーチ（白）',phone:'スマートフォン（青いケース）',umbrella:'傘（紺）'},
    foundOn:d=>`${d} 拾得`, storage:'保管中', staff:'スタッフに見せてください', dir:'案内センターへの道順',
    tr:i=>`「オリンピック公園で${i}をなくしました。落とし物の保管記録を確認したいです。」`, toast:'デモ版です — 地図リンクは準備中'},
- ko:{tag:'올림픽공원 공연 동행 가이드', demo:'데모 · 샘플 데이터', tomorrow:'다가오는 공연',
+ ko:{notice:'공식 공지', noticeTxt:{gate:'NOVA World Tour 당일 3번 게이트는 17:40에 입장이 마감돼요. 1·2번 게이트를 이용해 주세요.'}, noticeSrc:'출처: 올림픽공원 올팍소식',
+   offline:'오프라인 저장', saved:'✓ 저장됨', savedToast:'공연·공원 지도·한국어 카드를 오프라인용으로 저장했어요',
+   same:(t,v)=>`같은 날 ${v}에서 「${t}」도 열려요 — 예보에 반영했어요.`,
+   walkT:'일찍 왔다면 짧은 산책 어때요?', walk:{fortress:['몽촌토성 한 바퀴','나홀로나무 — 공원에서 가장 사랑받는 포토 스폿'],lawn:['88잔디마당 → 세계평화의 문','느티나무 길, 평탄해서 유모차도 편해요']}, walkSrc:'수목·갤러리 정보: KSPO 올림픽공원 데이터', minS:m=>m+'분',
+   fbT:'지금 있는 곳, 얼마나 붐비나요?', fb:['표시보다 한산','비슷해요','표시보다 붐벼요'], fbThanks:'고마워요! 제보는 예보 보정에 쓰여요.', fbNote:'익명 제보는 월간 리포트로 KSPO에 공유돼요.',
+   tag:'올림픽공원 공연 동행 가이드', demo:'데모 · 샘플 데이터', tomorrow:'다가오는 공연',
    alert:(t,b)=>`비 예보가 있어요. ${b}에 도착하면 ${t}의 긴 줄을 피할 수 있어요.`, upcoming:'올림픽공원 공연 일정', all:'전체 보기',
    evNote:'데이터: KSPO 영문 공연정보 + 대관정보 · 공연장 이름은 고정 용어집으로 번역',
    tabs:['공연','혼잡 예보','실시간','유실물'],
@@ -192,7 +230,7 @@ const KO_PLACE = {dome:'KSPO DOME',gate:'출입구 부근',lawn:'88잔디마당'
 const LOCALE = {en:'en-US',zh:'zh-CN',ja:'ja-JP',ko:'ko-KR'};
 
 /* ───────────── State & helpers ───────────── */
-const S = {lang:'en', tab:0, ev:'e1', q:'', sel:'L0421', reminded:{}, notified:false};
+const S = {lang:'en', tab:0, ev:'e1', q:'', sel:'L0421', reminded:{}, notified:false, offline:false, fb:null};
 const $ = id => document.getElementById(id);
 const t = () => I[S.lang];
 const fmt = (iso, o) => new Intl.DateTimeFormat(LOCALE[S.lang], o).format(new Date(iso+'T12:00:00'));
@@ -221,7 +259,10 @@ const langChips = () => `<div class="chips">${[['en','EN'],['zh','中文'],['ja'
 
 function events(){
   const L=t(), e0=DATA.events[0], f0=DATA.forecast[e0.id];
-  return `<div><h1>OlparkMate</h1><p class="sub">${L.tag}</p></div>${langChips()}
+  const nt=DATA.notices[0];
+  return `<div class="row between" style="align-items:flex-start"><div><h1>OlparkMate</h1><p class="sub">${L.tag}</p></div>
+    <button class="mini ${S.offline?'done':''}" data-offline>${S.offline?L.saved:L.offline}</button></div>${langChips()}
+  <div class="card notice" style="gap:6px"><span class="k">${L.notice}</span><p>${L.noticeTxt[nt.key]}</p><span class="cap">${L.noticeSrc}</span></div>
   <div class="card alert"><div class="row" style="color:var(--orange)">${ic('bell','s')}<span class="k">${L.tomorrow} · ${e0.title}</span></div>
     <p>${L.alert(L.venue[e0.venue], f0.best.replace(' – ','–'))}</p></div>
   <div class="row between"><h2>${L.upcoming}</h2><span class="sub" style="color:var(--orange);font-weight:500">${L.all}</span></div>
@@ -236,12 +277,16 @@ function forecast(){
   const L=t(), e=DATA.events.find(x=>x.id===S.ev), f=DATA.forecast[e.id], at=remindAt(f.best), on=S.reminded[e.id];
   return `<div class="row"><button class="back" data-tab="0">${ic('back')}</button><h2>${e.title}</h2></div>
   <div class="card" style="gap:8px"><div class="chips"><span class="chip on">${L.venue[e.venue]}</span><span class="chip">${fmt(e.date,{month:'short',day:'numeric',weekday:'short'})} · ${e.time}</span></div>
-    <div class="row sub" style="font-weight:500"><span style="color:#3D7BD9">${ic('rain','s')}</span>${L.weather(f.rain,f.temp)}</div></div>
+    <div class="row sub" style="font-weight:500"><span style="color:#3D7BD9">${ic('rain','s')}</span>${L.weather(f.rain,f.temp)}</div>
+    ${DATA.rentals.filter(x=>x.date===e.date).map(x=>`<div class="same">${L.same(x.title,L.venue[x.venue])}</div>`).join('')}</div>
   <div class="card" style="gap:12px"><h2 style="font-size:15px">${L.crowd}</h2>
     <div class="chart">${f.hours.map(([h,v])=>`<div class="bar"><i style="height:${Math.round(v*1.2)}px;background:${COLOR[lvl(v)]}"></i>${h}</div>`).join('')}</div>
     <div class="row" style="gap:6px">${pill('ok')}${pill('busy')}${pill('full')}</div></div>
   <div class="card best"><small>${L.bestK}</small><b>${f.best}</b><p>${L.bestP}</p></div>
   <button class="btn ${on?'done':''}" data-remind="${e.id}">${on?L.reminded(at):L.remind(at)}</button>
+  <div class="card walk" style="gap:12px"><h2 style="font-size:15px">${L.walkT}</h2>
+    ${DATA.walks.map(w=>`<div class="w"><span class="mins">${L.minS(w.min)}</span><div><b>${L.walk[w.key][0]}</b><span>${L.walk[w.key][1]}</span></div></div>`).join('')}
+    <span class="cap">${L.walkSrc}</span></div>
   <div class="chips">${DATA.events.map(x=>`<button class="chip ${x.id===S.ev?'on':''}" data-pick="${x.id}">${fmt(x.date,{month:'numeric',day:'numeric'})} ${x.title.split(' ')[0]}</button>`).join('')}</div>
   <p class="cap">${L.fcNote}</p>`;
 }
@@ -258,6 +303,9 @@ function live(){
     <div class="li"><span class="n">${L.leave(e.end)}</span>${pill('full')}</div>
     <div class="li"><span class="n">${L.leave(addMin(e.end,30))}</span>${pill('ok')}</div>
     <p class="d" style="font-size:12px;color:var(--sub)">${L.wait}</p></div>
+  <div class="card" style="gap:10px"><h2 style="font-size:15px">${L.fbT}</h2>
+    <div class="fb">${L.fb.map((x,i)=>`<button class="${S.fb===i?'on':''}" data-fb="${i}">${x}</button>`).join('')}</div>
+    <span class="cap">${S.fb!==null?L.fbThanks+' ':''}${L.fbNote}</span></div>
   <button class="btn line ${S.notified?'done':''}" data-notify>${S.notified?L.notified:L.notify}</button>`;
 }
 function addMin(hm,n){const [h,m]=hm.split(':').map(Number);const d=h*60+m+n;return `${String(Math.floor(d/60)%24).padStart(2,'0')}:${String(d%60).padStart(2,'0')}`;}
@@ -291,7 +339,7 @@ function render(keepFocus){
   if(keepFocus){const q=$('q'); q.focus(); q.setSelectionRange(q.value.length,q.value.length);}
 }
 document.addEventListener('click', e=>{
-  const b = e.target.closest('[data-lang],[data-tab],[data-ev],[data-remind],[data-pick],[data-notify],[data-sel],[data-dir]'); if(!b) return;
+  const b = e.target.closest('[data-lang],[data-tab],[data-ev],[data-remind],[data-pick],[data-notify],[data-sel],[data-dir],[data-offline],[data-fb]'); if(!b) return;
   const d=b.dataset;
   if(d.lang){S.lang=d.lang;}
   else if(d.tab!==undefined){S.tab=+d.tab; $('main').scrollTop=0;}
@@ -301,6 +349,8 @@ document.addEventListener('click', e=>{
   else if('notify' in d){S.notified=!S.notified;}
   else if(d.sel){S.sel=d.sel;}
   else if('dir' in d){toast(t().toast); return;}
+  else if('offline' in d){S.offline=!S.offline; if(S.offline){render(); toast(t().savedToast); return;}}
+  else if(d.fb!==undefined){S.fb=+d.fb;}
   render();
 });
 document.addEventListener('input', e=>{ if(e.target.id==='q' && !e.isComposing){ S.q=e.target.value; render(true);} });

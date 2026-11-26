@@ -29,6 +29,29 @@
       "end": "21:30"
     }
   ],
+  "rentals": [
+    {
+      "date": "2026-12-12",
+      "title": "Winter Futsal Cup",
+      "venue": "handball"
+    }
+  ],
+  "notices": [
+    {
+      "event": "e1",
+      "key": "gate"
+    }
+  ],
+  "walks": [
+    {
+      "key": "fortress",
+      "min": 25
+    },
+    {
+      "key": "lawn",
+      "min": 15
+    }
+  ],
   "forecast": {
     "e1": {
       "rain": 70,
